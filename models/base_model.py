@@ -8,11 +8,20 @@ from datetime import datetime
 
 class BaseModel:
     """ The BaseModel class """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """ The initialisation method """
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if kwargs:
+            for key,value in kwargs.items():
+                if not key.startswith("__"):
+                    if key == "updated_at" or key == "created_at":
+                        date_format = "%Y-%m-%dT%H:%M:%S.%f"
+                        self.__dict__[key] = datetime.strptime(value, date_format)
+                    else:
+                        self.__dict__[key] = value
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
 
     def __str__(self):
         """ The string representation """
