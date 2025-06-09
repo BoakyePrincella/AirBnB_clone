@@ -38,3 +38,6 @@ class HBNBCommand(cmd.Cmd):
 
         line = line.split()
         class_name = line[0]
+
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
