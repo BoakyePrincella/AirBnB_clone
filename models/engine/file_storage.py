@@ -38,6 +38,11 @@ class FileStorage:
         import json
         from ..base_model import BaseModel
         from ..user import User
+        from ..city import City
+        from ..state import State
+        from ..place import Place
+        from ..review import Review
+        from ..amenity import Amenity
         if os.path.isfile(FileStorage.__file_path):
             with open(FileStorage.__file_path, "r") as file:
                 json_string = file.read()
@@ -47,3 +52,19 @@ class FileStorage:
                         name = key.split(".")
                         FileStorage.__objects[key] = eval(
                                 "{}(**value)".format(name[0]))
+
+    def delete(self, key):
+        """Deletes a key, value pair based on its key"""
+        if key:
+            for k in FileStorage.__objects.keys():
+                if k == key:
+                    del FileStorage.__objects[k]
+                    break
+
+    def update(self, key, attribute, value):
+        """Updates an objects"""
+        if key and attribute and value:
+            for k in FileStorage.__objects.keys():
+                if k == key:
+                    FileStorage.__objects[k].__dict__[attribute] = value
+                    break
