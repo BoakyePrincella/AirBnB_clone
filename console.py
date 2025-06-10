@@ -2,6 +2,9 @@
 """This is entry point of the command interpreter"""
 
 import cmd
+from models import storage
+from models.base_model import BaseModel
+import re
 
 class HBNBCommand(cmd.Cmd):
     """The HBNB command"""
@@ -44,26 +47,29 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, line):
         """Prints string representation of an instance with cls_name and id"""
-        if line:
+        if not line:
+            print("** class name missing **")
+            return
 
-            line = line.split()
-            class_name = line[0]
+        line = line.split()
+        class_name = line[0]
 
-            if class_name in self.models_list:
-                if len(line) > 1:
-                    keys = ".".join(line[0:2])
-                    for key, value in storage.all().items():
-                        if keys == key:
-                            print(value)
-                            break
-                        else:
-                            print("** no instance found **")
-                else:
-                    print("** instance id missing **")
-            else:
-                print("** class doesn't exist **")
+        if class_name not in self.models_list:
+            print("** class doesn't exist **")
+            return
+
+        if len(line) < 2:
+            print("** instance id missing **")
+            return
+
+        key = f"{class_name}.{line[1]}"
+        all_objs = storage.all()
+
+        if key in all_objs:
+            print(all_objs[key])
         else:
-            print("** class name missing ***")
+            print("** no instance found **")
+
 
     def help_show(self):
         """The help function for the show class"""
@@ -178,6 +184,14 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """Do nothing on an empty line"""
         pass
+
+    def parse_line(self, line):
+        """The parse_line function"""
+        match = re.match(r"^(.*?)===(.*)===(.*)$", line)
+        if match:
+            return list(match.groups())
+        else:
+            return line.split()
 
 
 
